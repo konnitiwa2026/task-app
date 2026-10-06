@@ -1,100 +1,61 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
-app.secret_key = 'paper_prototype_secret_key'
+app.secret_key = 'saitama_regional_help_secret_key'
 
-INITIAL_TASKS = [
-    {
-        "id": 1,
-        "title": "画面設計書の作成",
-        "category": "設計",
-        "assignee": "山田",
-        "priority": "高",
-        "status": "進行中",
-        "due_date": "2026-10-10"
-    },
-    {
-        "id": 2,
-        "title": "要件定義ヒアリング",
-        "category": "企画",
-        "assignee": "鈴木",
-        "priority": "中",
-        "status": "完了",
-        "due_date": "2026-10-01"
-    }
-]
-
-tasks_db = list(INITIAL_TASKS)
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username", "管理者")
-        session["user"] = username
-        return redirect(url_for("dashboard"))
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect(url_for("login"))
-
-@app.route("/")
+# 1. ログイン選択画面（トップページ）
+@app.route('/')
 def index():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    return redirect(url_for("dashboard"))
+    return render_template('index.html')
 
-@app.route("/dashboard")
-def dashboard():
-    if "user" not in session:
-        return redirect(url_for("login"))
+# 2. 市民ログイン
+@app.route('/login/citizen', methods=['GET', 'POST'])
+def login_citizen():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        # エラー例のテスト用: emailに'error'が含まれる場合は6のエラー例を表示
+        if 'error' in email:
+            return render_template('login_citizen.html', error="メールアドレスまたはパスワードが正しくありません。")
+        return redirect(url_for('citizen_mypage'))
+    return render_template('login_citizen.html')
 
-    total_tasks = len(tasks_db)
-    in_progress = sum(1 for t in tasks_db if t["status"] == "進行中")
-    not_started = sum(1 for t in tasks_db if t["status"] == "未着手")
-    completed = sum(1 for t in tasks_db if t["status"] == "完了")
+# 3. 行政職員ログイン
+@app.route('/login/staff', methods=['GET', 'POST'])
+def login_staff():
+    if request.method == 'POST':
+        return redirect(url_for('staff_dashboard'))
+    return render_template('login_staff.html')
 
-    return render_template(
-        "dashboard.html",
-        total_tasks=total_tasks,
-        in_progress=in_progress,
-        not_started=not_started,
-        completed=completed
-    )
+# 管理者ログイン
+@app.route('/login/admin', methods=['GET', 'POST'])
+def login_admin():
+    if request.method == 'POST':
+        return redirect(url_for('admin_portal'))
+    return render_template('login_admin.html')
 
-@app.route("/tasks")
-def task_list():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    return render_template("tasks/index.html", tasks=tasks_db)
+# 4. 市民マイページ
+@app.route('/citizen/mypage')
+def citizen_mypage():
+    return render_template('citizen_mypage.html')
 
-@app.route("/tasks/add", methods=["POST"])
-def add_task():
-    if "user" not in session:
-        return redirect(url_for("login"))
+# 市民新規報告画面
+@app.route('/citizen/report', methods=['GET', 'POST'])
+def citizen_report():
+    if request.method == 'POST':
+        flash('困りごとの報告を送信しました。AIによる分類・緊急度判定を開始します。', 'success')
+        return redirect(url_for('citizen_mypage'))
+    return render_template('citizen_report.html')
 
-    new_id = max([t["id"] for t in tasks_db], default=0) + 1
-    new_task = {
-        "id": new_id,
-        "title": request.form.get("title", "新規タスク"),
-        "category": request.form.get("category", "開発"),
-        "assignee": request.form.get("assignee", session.get("user", "担当者")),
-        "priority": request.form.get("priority", "中"),
-        "status": request.form.get("status", "未着手"),
-        "due_date": request.form.get("due_date", "2026-10-30")
-    }
-    tasks_db.append(new_task)
-    return redirect(url_for("task_list"))
+# 5. 行政職員ダッシュボード
+@app.route('/staff/dashboard')
+def staff_dashboard():
+    return render_template('staff_dashboard.html')
 
-@app.route("/tasks/delete/<int:task_id>", methods=["POST"])
-def delete_task(task_id):
-    if "user" not in session:
-        return redirect(url_for("login"))
+# 管理者ポータル
+@app.route('/admin/portal')
+def admin_portal():
+    return render_template('admin_portal.html')
 
-    global tasks_db
-    tasks_db = [t for t in tasks_db if t["id"] != task_id]
-    return redirect(url_for("task_list"))
-
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
