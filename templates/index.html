@@ -1,57 +1,48 @@
 {% extends 'base.html' %}
 
 {% block layout %}
-<style>
-    /* 全面背景画像の設定 */
-    .bg-hero {
-        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
-                    url("{{ url_for('static', filename='images/top_11_sp.jpg') }}") center/cover no-repeat;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    /* 中央カードのスタイル */
-    .hero-card {
-        background-color: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        max-width: 550px;
-        width: 100%;
-    }
-</style>
+<!-- 背景画像ラッパー（fixed を外してスクロールに追従） -->
+<div style="background: url('{{ url_for('static', filename='images/top_11_sp.jpg') }}') no-repeat center center; background-size: cover; min-height: 100vh; position: relative;">
 
-<div class="bg-hero py-5">
-    <div class="hero-card p-4 p-md-5 text-center mx-3">
-        <!-- 上部ナビリンク -->
-        <div class="d-flex justify-content-end gap-3 mb-3 small">
-            <a href="{{ url_for('guide') }}" class="text-secondary text-decoration-none">はじめての方へ</a>
-            <a href="{{ url_for('faq') }}" class="text-secondary text-decoration-none">よくある質問</a>
-        </div>
+    <!-- 画面右上の新規登録ボタン -->
+    <div class="position-absolute top-0 end-0 p-3 z-3">
+        <a href="{{ url_for('register') }}" class="btn btn-light shadow-sm fw-bold border text-primary">
+            <i class="bi bi-person-plus-fill me-1"></i>新規登録
+        </a>
+    </div>
 
-        <!-- アイコン & タイトル -->
-        <div class="mb-3 text-primary">
-            <i class="bi bi-geo-alt-fill display-3"></i>
-        </div>
-        <h3 class="fw-bold mb-1">埼玉県の困りごと報告システム</h3>
-        <p class="text-muted small mb-4">みんなの声で、よりよいまちをつくる</p>
+    <!-- 中央カード表示エリア -->
+    <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
+        <div class="card border-0 shadow-lg p-4 p-md-5 rounded-4 text-center" style="max-width: 550px; background: rgba(255, 255, 255, 0.95);">
+            
+            <!-- カード内右上リンク -->
+            <div class="d-flex justify-content-end gap-3 mb-3 small">
+                <a href="{{ url_for('guide') }}" class="text-secondary text-decoration-none">はじめての方へ</a>
+                <a href="{{ url_for('faq') }}" class="text-secondary text-decoration-none">よくある質問</a>
+            </div>
 
-        <!-- システム説明文 -->
-        <p class="text-secondary small mb-4 lh-base">
-            このシステムは、埼玉県の困りごと（道路破損・街灯故障など）を住民から受け付け、AIで分析・分類し、行政の迅速な対応を支援するサービスです。
-        </p>
+            <div class="mb-3">
+                <i class="bi bi-geo-alt-fill text-primary display-3"></i>
+            </div>
 
-        <!-- ボタン群 -->
-        <div class="d-grid gap-3">
-            <a href="{{ url_for('login_citizen') }}" class="btn btn-primary btn-lg fw-bold py-2 shadow-sm fs-6">
-                <i class="bi bi-person-fill me-2"></i>市民の方はこちら（ログイン）
-            </a>
-            <a href="{{ url_for('login_staff') }}" class="btn btn-success btn-lg fw-bold py-2 shadow-sm fs-6">
-                <i class="bi bi-building me-2"></i>行政職員の方はこちら（ログイン）
-            </a>
-            <a href="{{ url_for('login_admin') }}" class="btn btn-secondary btn-lg fw-bold py-2 shadow-sm fs-6">
-                <i class="bi bi-gear-fill me-2"></i>管理者の方はこちら（ログイン）
-            </a>
+            <h2 class="fw-bold mb-2">埼玉県の困りごと報告システム</h2>
+            <p class="text-muted small mb-4">みんなの声で、よりよいまちをつくる</p>
+
+            <p class="text-secondary small mb-4">
+                このシステムは、埼玉県の困りごと（道路破損・街灯故障など）を住民から受け付け、AIで分析・分類し、行政の迅速な対応を支援するサービスです。
+            </p>
+
+            <div class="d-grid gap-3">
+                <a href="{{ url_for('login_citizen') }}" class="btn btn-primary btn-lg fw-bold py-2">
+                    <i class="bi bi-person-fill me-2"></i>市民の方はこちら（ログイン）
+                </a>
+                <a href="{{ url_for('login_staff') }}" class="btn btn-success btn-lg fw-bold py-2">
+                    <i class="bi bi-building me-2"></i>行政職員の方はこちら（ログイン）
+                </a>
+                <a href="{{ url_for('login_admin') }}" class="btn btn-secondary btn-lg fw-bold py-2">
+                    <i class="bi bi-gear-fill me-2"></i>管理者の方はこちら（ログイン）
+                </a>
+            </div>
         </div>
     </div>
 </div>

@@ -18,6 +18,23 @@ def guide():
 def faq():
     return render_template('faq.html')
 
+# 市民新規登録画面
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        
+        # パスワード文字数チェック（8文字未満はエラー）
+        if len(password) < 8:
+            flash('パスワードは8文字以上で入力してください。', 'danger')
+            return render_template('register.html')
+            
+        # 登録処理（成功時はログイン画面へ）
+        flash('アカウントの作成が完了しました。ログインしてください。', 'success')
+        return redirect(url_for('login_citizen'))
+        
+    return render_template('register.html')
+
 # 2. 市民ログイン
 @app.route('/login/citizen', methods=['GET', 'POST'])
 def login_citizen():
