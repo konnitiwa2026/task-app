@@ -1,4 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+import threading
+import time
+import urllib.error
+import urllib.request
+import webbrowser
 
 app = Flask(__name__)
 app.secret_key = 'saitama_regional_help_secret_key'
@@ -85,4 +91,18 @@ def admin_portal():
     return render_template('admin_portal.html')
 
 if __name__ == '__main__':
+    def open_browser_when_ready():
+        url = 'http://127.0.0.1:5000'
+        for _ in range(50):
+            try:
+                with urllib.request.urlopen(url, timeout=1):
+                    pass
+            except (urllib.error.URLError, OSError):
+                time.sleep(0.2)
+            else:
+                webbrowser.open(url)
+                return
+
+    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
+        threading.Thread(target=open_browser_when_ready, daemon=True).start()
     app.run(debug=True, port=5000)
