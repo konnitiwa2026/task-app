@@ -8,6 +8,16 @@ app.secret_key = 'saitama_regional_help_secret_key'
 def index():
     return render_template('index.html')
 
+# はじめての方へ（使い方ガイド）
+@app.route('/guide')
+def guide():
+    return render_template('guide.html')
+
+# よくある質問（FAQ）
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
+
 # 2. 市民ログイン
 @app.route('/login/citizen', methods=['GET', 'POST'])
 def login_citizen():
