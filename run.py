@@ -6,7 +6,11 @@ import urllib.error
 import urllib.request
 import webbrowser
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder='app/templates',
+    static_folder='app/static'
+            )
 app.secret_key = 'saitama_regional_help_secret_key'
 
 # 1. ログイン選択画面（トップページ）
@@ -33,13 +37,13 @@ def register():
         # パスワード文字数チェック（8文字未満はエラー）
         if len(password) < 8:
             flash('パスワードは8文字以上で入力してください。', 'danger')
-            return render_template('register.html')
+            return render_template('auth/register.html')
             
         # 登録処理（成功時はログイン画面へ）
         flash('アカウントの作成が完了しました。ログインしてください。', 'success')
         return redirect(url_for('login_citizen'))
         
-    return render_template('register.html')
+    return render_template('auth/register.html')
 
 # 2. 市民ログイン
 @app.route('/login/citizen', methods=['GET', 'POST'])
@@ -49,28 +53,28 @@ def login_citizen():
         password = request.form.get('password')
         # エラー例のテスト用: emailに'error'が含まれる場合は6のエラー例を表示
         if 'error' in email:
-            return render_template('login_citizen.html', error="メールアドレスまたはパスワードが正しくありません。")
+            return render_template('auth/login_citizen.html', error="メールアドレスまたはパスワードが正しくありません。")
         return redirect(url_for('citizen_mypage'))
-    return render_template('login_citizen.html')
+    return render_template('auth/login_citizen.html')
 
 # 3. 行政職員ログイン
 @app.route('/login/staff', methods=['GET', 'POST'])
 def login_staff():
     if request.method == 'POST':
         return redirect(url_for('staff_dashboard'))
-    return render_template('login_staff.html')
+    return render_template('auth/login_staff.html')
 
 # 管理者ログイン
 @app.route('/login/admin', methods=['GET', 'POST'])
 def login_admin():
     if request.method == 'POST':
         return redirect(url_for('admin_portal'))
-    return render_template('login_admin.html')
+    return render_template('auth/login_admin.html')
 
 # 4. 市民マイページ
 @app.route('/citizen/mypage')
 def citizen_mypage():
-    return render_template('citizen_mypage.html')
+    return render_template('citizen/citizen_mypage.html')
 
 # 市民新規報告画面
 @app.route('/citizen/report', methods=['GET', 'POST'])
@@ -78,17 +82,17 @@ def citizen_report():
     if request.method == 'POST':
         flash('困りごとの報告を送信しました。AIによる分類・緊急度判定を開始します。', 'success')
         return redirect(url_for('citizen_mypage'))
-    return render_template('citizen_report.html')
+    return render_template('citizen/citizen_report.html')
 
 # 5. 行政職員ダッシュボード
 @app.route('/staff/dashboard')
 def staff_dashboard():
-    return render_template('staff_dashboard.html')
+    return render_template('staff/staff_dashboard.html')
 
 # 管理者ポータル
 @app.route('/admin/portal')
 def admin_portal():
-    return render_template('admin_portal.html')
+    return render_template('admin/admin_portal.html')
 
 if __name__ == '__main__':
     def open_browser_when_ready():
